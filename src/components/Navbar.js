@@ -1,71 +1,95 @@
-import React from 'react'
-import logo from "../assets/Logo.svg"
-import {Link} from "react-router-dom"
-import {toast} from "react-hot-toast"
+import React, { useState } from 'react'
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 
-const Navbar = (props) => {
-    let isLoggedIn = props.isLoggedIn;
-    let setIsLoggedIn = props.setIsLoggedIn;
+const LoginForm = ({setIsLoggedIn}) => {
+
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState( {
+        email:"", password:""
+    })
+
+    const[showPassword, setShowPassword] = useState(false);
+
+    function changeHandler(event) {
+
+        setFormData( (prevData) =>(
+            {
+                ...prevData,
+                [event.target.name]:event.target.value
+            }
+        ) )
+
+    }
+
+    function submitHandler(event) {
+        event.preventDefault();
+        setIsLoggedIn(true);
+        toast.success("Logged In");
+        console.log("Printing the formData ");
+        console.log(formData)
+        navigate("/dashboard");
+    }
 
   return (
-    <div className='flex justify-evenly'>
+    <form onSubmit={submitHandler}
+    className="flex flex-col w-full gap-y-4 mt-6">
 
-        <Link to="/"> 
-            <img src={logo} alt="Logo" width={160} height={32} loading="lazy"/>
-        </Link>
+        <label className='w-full'>
+            <p className='text-[0.875rem] text-richblack-5 mb-1 leading-[1.375rem]'>
+                Email Address<sup className='text-pink-200'>*</sup>
+            </p>
+            <input 
+                required
+                type="email"
+                value = {formData.email}
+                onChange={changeHandler}
+                placeholder="Enter email address"
+                name="email"
+                className='bg-richblack-800 rounded-[0.5rem] text-richblack-5 w-full p-[12px]'
+            />
+        </label>
 
-        <nav>
-            <ul className='flex gap-3'>
-                <li>
-                    <Link to="/">Home</Link>
-                </li>
-                <li>
-                    <Link to="/">About</Link>
-                </li>
-                <li>
-                    <Link to="/">Contact</Link>
-                </li>
-            </ul>
-        </nav>
+        <label className='w-full relative'>
+            <p className='text-[0.875rem] text-richblack-5 mb-1 leading-[1.375rem]'>
+                Password<sup className='text-pink-200'>*</sup>
+            </p>
+            <input 
+                required
+                type= {showPassword ? ("text") : ("password")}
+                value = {formData.password}
+                onChange={changeHandler}
+                placeholder="Enter Password"
+                name="password"
+                className='bg-richblack-800 rounded-[0.5rem] text-richblack-5 w-full p-[12px]'
+            />
 
-        {/* Login - SignUp - LogOut - Dashboard */}
-        <div className='flex ml-5 mr-3 gap-3'>
-            { !isLoggedIn &&
-                <Link to="/login">
-                    <button>
-                        Login
-                    </button>
-                </Link>
-            }
-            { !isLoggedIn &&
-                <Link to="/signup">
-                    <button >
-                        Sign Up
-                    </button>
-                </Link>
-            }
-            { isLoggedIn &&
-                <Link to="/">
-                    <button onClick={() => {
-                        setIsLoggedIn(false);
-                        toast.success("Logged Out");
-                    }}>
-                        Log Out
-                    </button>
-                </Link>
-            }
-            { isLoggedIn &&
-                <Link to="/dashboard">
-                    <button>
-                        Dashboard
-                    </button>
-                </Link>
-            }
-        </div>
-      
-    </div>
+            <span 
+            className='absolute right-3 top-[38px] cursor-pointer'
+            onClick={() => setShowPassword((prev) => !prev)}>
+                {showPassword ? 
+
+                (<AiOutlineEyeInvisible fontSize={24} fill='#AFB2BF'/>) : 
+
+                (<AiOutlineEye fontSize={24} fill='#AFB2BF'/>)}
+            </span>
+
+            <Link to="#">
+                <p className='text-xs mt-1 text-blue-100 max-w-max ml-auto'>
+                    Forgot Password
+                </p>
+            </Link>
+        </label>
+
+        <button className='bg-yellow-50 rounded-[8px] font-medium text-richblack-900 px-[12px] py-[8px] mt-6'>
+            Sign In
+        </button>
+
+    </form>
   )
 }
 
-export default Navbar
+export default LoginForm
